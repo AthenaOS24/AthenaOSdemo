@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Virtual Psychologist</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        #chatbox {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f1f1f1;
+        }
+        .bot {
+            text-align: left;
+            color: green;
+        }
+        .user {
+            text-align: right;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-container p-3">
+            <h3 class="text-center">AI Virtual Psychologist</h3>
+            <div id="chatbox" class="mb-3"></div>
+            <div class="input-group">
+                <input type="text" id="user-input" class="form-control" placeholder="Type a message..." onkeypress="sendMessage(event)">
+                <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function sendMessage(event) {
+            if (event && event.key !== "Enter") return;
+
+            let inputField = document.getElementById("user-input");
+            let message = inputField.value.trim();
+            if (message === "") return;
+
+            let chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<p class="user"><strong>You:</strong> ${message}</p>`;
+
+            fetch("http://127.0.0.1:8000/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatbox.innerHTML += `<p class="bot"><strong>Bot:</strong> ${data.response}</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            });
+
+            inputField.value = "";
+        }
+    </script>
+</body>
+</html>
